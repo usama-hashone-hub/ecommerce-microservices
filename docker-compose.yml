@@ -1,0 +1,71 @@
+version: "3"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: ecommerce-microservice-dev
+    ports:
+      - "3000:3000"
+    networks:
+      - backend
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    depends_on:
+      - redis
+      - mysql
+      - rabbitmq
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6380:6379"
+    volumes:
+      - ./data/redis/conf:/user/local/etc/redis
+    networks:
+      - backend
+
+  mysql:
+    image: mysql:8.0.33
+    restart: "unless-stopped"
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpassword
+      command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s # Give MySQL more time to initialize
+      timeout: 10s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3.12.10
+    restart: "unless-stopped"
+    # ports:
+    # - '5672:5672'
+    # command: [--auth]
+    environment:
+      RABBITMQ_DEFAULT_USER: root
+      RABBITMQ_DEFAULT_PASS: password
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  data:
+    driver: local
