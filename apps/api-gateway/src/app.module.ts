@@ -5,35 +5,39 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
 import { PurchaseController } from "./ecommerce-gateway/purchase/purchase.controller";
 import { ProductController } from "./ecommerce-gateway/product/product.controller";
 import { CustomerController } from "./ecommerce-gateway/customer/customer.controller";
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     ClientsModule.register([
       {
         name: "CUSTOMER_SERVICE",
         transport: Transport.RMQ,
         options: {
-          urls: ["amqp://localhost:5672"],
+          urls: [`amqp://${process.env.RABBITMQ_DEFAULT_USER}:${process.env.RABBITMQ_DEFAULT_PASS}@${process.env.RABBITMQ_HOST}:${process.env.RABBITMQ_PORT}`],
           queue: "customer_service_queue",
-          queueOptions: { durable: false },
+          queueOptions: { durable: true },
         },
       },
       {
         name: "PRODUCT_SERVICE",
         transport: Transport.RMQ,
         options: {
-          urls: ["amqp://localhost:5672"],
+          urls: [`amqp://${process.env.RABBITMQ_DEFAULT_USER}:${process.env.RABBITMQ_DEFAULT_PASS}@${process.env.RABBITMQ_HOST}:${process.env.RABBITMQ_PORT}`],
           queue: "product_service_queue",
-          queueOptions: { durable: false },
+          queueOptions: { durable: true },
         },
       },
       {
         name: "PURCHASE_SERVICE",
         transport: Transport.RMQ,
         options: {
-          urls: ["amqp://localhost:5672"],
+          urls: [`amqp://${process.env.RABBITMQ_DEFAULT_USER}:${process.env.RABBITMQ_DEFAULT_PASS}@${process.env.RABBITMQ_HOST}:${process.env.RABBITMQ_PORT}`],
           queue: "purchase_service_queue",
-          queueOptions: { durable: false },
+          queueOptions: { durable: true },
         },
       },
     ]),

@@ -8,12 +8,20 @@ async function bootstrap() {
     {
       transport: Transport.RMQ,
       options: {
-        urls: ["amqp://localhost:5672"],
+        urls: [
+          `amqp://${process.env.RABBITMQ_DEFAULT_USER}:${process.env.RABBITMQ_DEFAULT_PASS}@${process.env.RABBITMQ_HOST}:${process.env.RABBITMQ_PORT}`,
+        ],
         queue: "product_service_queue",
-        queueOptions: { durable: false },
+        queueOptions: {
+          durable: true,
+        },
       },
     }
   );
+
   await app.listen();
+  console.log(
+    `Product microservice is running on RabbitMQ queue: ${"product_service_queue"}`
+  );
 }
 bootstrap();
