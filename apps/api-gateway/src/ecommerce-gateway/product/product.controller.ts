@@ -12,6 +12,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseInterceptors,
 } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
 import { catchError, Observable } from "rxjs";
@@ -24,9 +25,12 @@ import {
 } from "@nestjs/swagger";
 import { UpdateProductDto } from "@app/common/dto/update-product.dto";
 import { CreateProductDto } from "@app/common/dto/create-product.dto";
+import { CircuitBreakerInterceptor } from "../../shared/circuit-breaker/circuit-breaker.interceptor"; 
+import { CircuitBreakerService } from "../../shared/circuit-breaker/circuit-breaker.service";
 
 @ApiTags("Products") // Group all product-related endpoints under "Products" in Swagger
 @Controller("products")
+@UseInterceptors(new CircuitBreakerInterceptor('PRODUCT_SERVICE'))
 export class ProductController {
   constructor(
     @Inject("PRODUCT_SERVICE")

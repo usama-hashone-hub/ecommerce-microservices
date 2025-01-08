@@ -6,6 +6,7 @@ import { PurchaseController } from "./ecommerce-gateway/purchase/purchase.contro
 import { ProductController } from "./ecommerce-gateway/product/product.controller";
 import { CustomerController } from "./ecommerce-gateway/customer/customer.controller";
 import { ConfigModule } from '@nestjs/config';
+import { CircuitBreakerModule } from "./shared/circuit-breaker/circuit-breaker.module";
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { ConfigModule } from '@nestjs/config';
         },
       },
     ]),
+    CircuitBreakerModule
   ],
   controllers: [
     AppController,
